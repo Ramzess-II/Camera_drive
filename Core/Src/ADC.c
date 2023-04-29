@@ -5,6 +5,7 @@
 extern struct _flags *point_flags;
 
 uint16_t adc_buf [2];
+// hop hey
 
 /*struct adc_dats {
 	uint16_t adc_1;
