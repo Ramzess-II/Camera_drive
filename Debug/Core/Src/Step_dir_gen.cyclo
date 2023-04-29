@@ -1,0 +1,14 @@
+Step_dir_gen.c:16:6:new_data_flag	5
+Step_dir_gen.c:29:6:stop_motor	1
+Step_dir_gen.c:34:10:poz_motor	3
+Step_dir_gen.c:44:20:search_zero	10
+Step_dir_gen.c:84:20:revers_zero	10
+Step_dir_gen.c:118:20:new_step_go1	6
+Step_dir_gen.c:144:20:new_step_go2	6
+Step_dir_gen.c:170:6:TIM17_IRQHandler	3
+Step_dir_gen.c:181:6:TIM16_IRQHandler	1
+Step_dir_gen.c:186:10:stepper	4
+Step_dir_gen.c:203:10:extrn_step	5
+Step_dir_gen.c:221:6:init_struct	1
+Step_dir_gen.c:234:6:zero_position	1
+Step_dir_gen.c:247:6:search_steps	1

@@ -1,0 +1,14 @@
+../Core/Src/Step_dir_gen.c:16:6:new_data_flag	16	static
+../Core/Src/Step_dir_gen.c:29:6:stop_motor	8	static
+../Core/Src/Step_dir_gen.c:34:10:poz_motor	32	static
+../Core/Src/Step_dir_gen.c:44:20:search_zero	8	static
+../Core/Src/Step_dir_gen.c:84:20:revers_zero	8	static
+../Core/Src/Step_dir_gen.c:118:20:new_step_go1	8	static
+../Core/Src/Step_dir_gen.c:144:20:new_step_go2	8	static
+../Core/Src/Step_dir_gen.c:170:6:TIM17_IRQHandler	8	static
+../Core/Src/Step_dir_gen.c:181:6:TIM16_IRQHandler	8	static
+../Core/Src/Step_dir_gen.c:186:10:stepper	16	static
+../Core/Src/Step_dir_gen.c:203:10:extrn_step	24	static
+../Core/Src/Step_dir_gen.c:221:6:init_struct	8	static
+../Core/Src/Step_dir_gen.c:234:6:zero_position	8	static
+../Core/Src/Step_dir_gen.c:247:6:search_steps	8	static
