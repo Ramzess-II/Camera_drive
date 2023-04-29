@@ -13,12 +13,13 @@ float kp = 0.25;
 float ki = 2.2;
 float kd = 0.00005;
 int ks = 0;
+// helo
 
 int open = 1000;
 int min = 100;
 int max = 420;
 uint8_t pid_param = 40;
-
+uint8_t dts;
 
 volatile uint32_t count = 0;
 uint8_t flg = 0;
