@@ -33,10 +33,12 @@ void stop_motor (void){
 
 uint32_t poz_motor (uint8_t num_motor){
 	if (num_motor == 1) {
-		return map (stepp_1.last_steps, (stepp_1.step_down<<4)-PROTECT, (stepp_1.step_up<<4)-PROTECT, RESOLUTION, 0);
+	//	return map (stepp_1.last_steps, (stepp_1.step_down<<4)-PROTECT, (stepp_1.step_up<<4)-PROTECT, RESOLUTION, 0);
+		return stepp_1.last_steps ;  // для совместимости с входящими данными
 	}
 	if (num_motor == 2) {
-		return map (stepp_2.last_steps, (stepp_2.step_down<<4)-PROTECT, (stepp_2.step_up<<4)-PROTECT, 0,RESOLUTION);
+	//	return map (stepp_2.last_steps, (stepp_2.step_down<<4)-PROTECT, (stepp_2.step_up<<4)-PROTECT, 0,RESOLUTION);
+		return stepp_2.last_steps ;
 	}
 	return 0;
 }
@@ -48,21 +50,23 @@ static inline void search_zero(void) {              // поиск нуля
 		DIR2_ON;                                    // сюда заходим один раз чтоб сначала установить дир, а потом шагать
 	} else {                                        // если уже не первый раз заходим
 		if (READ_LIM1 && !flags.zero_pos1) {        // считаем состояние концевика, если не ноль, шагаем
-			stepp_1.step_down --;                   // считаем переменную количества шагов от конца
 			if (GPIOA->IDR & GPIO_IDR_0)            // считаем что у нас сейчас в регистре выхода,
 				STEP1_OFF;                          // если 1 то выставим 0
-			else
+			else {
 				STEP1_ON;                           // если же там 0 то установим 1 на выходе
+				stepp_1.step_down ++;                   // считаем переменную количества шагов от конца --;
+			}
 		} else {
 			flags.zero_pos1 = TRUE;                 // если вдруг сработал концевик то ставим флаг
 			STEP1_OFF;                              // и сбрасываем степ в 0
 		}
 		if (READ_LIM2 && !flags.zero_pos2) {        // считаем состояние концевика, если не ноль, шагаем
-			stepp_2.step_down --;
 			if (GPIOA->IDR & GPIO_IDR_1)
 				STEP2_OFF;                          // считаем что у нас сейчас в регистре выхода, если 1 то выставим 0
-			else
+			else {
 				STEP2_ON;                           // если же там 0 то установим 1 на выходе
+				stepp_2.step_down ++;
+			}
 		} else {
 			flags.zero_pos2 = TRUE;                 // если вдруг сработал концевик то ставим флаг
 			STEP2_OFF;
@@ -71,8 +75,8 @@ static inline void search_zero(void) {              // поиск нуля
 
 	if (flags.zero_pos1 && flags.zero_pos2) {       // если сработало два флага значит мы в нулях
 		flags.zero_ok = TRUE;                       // установим флаг
-		stepp_1.last_steps = 0;                     // обнулим нафиг все
-		stepp_2.last_steps = 0;
+		stepp_1.last_steps = stepp_1.step_down << 5;     // приравняем в текущие шаги то сколько отшагали от конца
+		stepp_2.last_steps = stepp_2.step_down << 5;
 		stepp_1.curent_steps = stepp_1.last_steps;
 		stepp_2.curent_steps = stepp_2.last_steps;
 		//flags.zero_in_programm = FALSE;             // сбросить флаг обнуления в программе
@@ -88,21 +92,23 @@ static inline void revers_zero (void){
 		DIR2_OFF;                                   // сюда заходим один раз чтоб сначала установить дир, а потом шагать
 	} else {                                        // если уже не первый раз заходим
 		if (!READ_LIM1 && !flags.zero_pos1) {       // считаем состояние концевика, если не ноль, шагаем
-			stepp_1.step_up ++;                     // считаем переменную количества шагов от конца
 			if (GPIOA->IDR & GPIO_IDR_0)            // считаем что у нас сейчас в регистре выхода,
 				STEP1_OFF;                          // если 1 то выставим 0
-			else
+			else {
 				STEP1_ON;                           // если же там 0 то установим 1 на выходе
+			    stepp_1.step_up ++;                 // считаем переменную количества шагов от конца
+			}
 		} else {
 			flags.zero_pos1 = TRUE;                 // если вдруг сработал концевик то ставим флаг
 			STEP1_OFF;                              // и сбрасываем степ в 0
 		}
 		if (!READ_LIM2 && !flags.zero_pos2) {       // считаем состояние концевика, если не ноль, шагаем
-			stepp_2.step_up ++;
 			if (GPIOA->IDR & GPIO_IDR_1)
 				STEP2_OFF;                          // считаем что у нас сейчас в регистре выхода, если 1 то выставим 0
-			else
+			else {
 				STEP2_ON;                           // если же там 0 то установим 1 на выходе
+				stepp_2.step_up ++;
+			}
 		} else {
 			flags.zero_pos2 = TRUE;                 // если вдруг сработал концевик то ставим флаг
 			STEP2_OFF;
@@ -202,20 +208,32 @@ uint32_t stepper( int32_t stepper, uint32_t num_motor) {
 
 uint32_t extrn_step(uint32_t stepper, uint32_t num_motor){
 	if (num_motor > 1) return 0;
-	if (stepper > RESOLUTION) return 0;
+	//if (stepper > RESOLUTION) return 0;
 	if (num_motor == 0) {
-		stepp_1.curent_steps = map (stepper, 0, RESOLUTION, (stepp_1.step_up<<4)-PROTECT, (stepp_1.step_down<<4)-PROTECT); // >>1 для полного шага
+		//stepp_1.curent_steps = map (stepper, 0, RESOLUTION, (stepp_1.step_up<<4)-PROTECT, (stepp_1.step_down<<4)-PROTECT); // >>1 для полного шага потому что переменная складывается 2 раза
+		stepp_1.curent_steps = stepper;
 		flags.balance_1 = 1;
 		CLEAR_REG(TIM17->CNT);                        // сбросим счетчик в ноль
 	    SET_BIT(TIM17->DIER, TIM_DIER_UIE);           // включим прерывание по обновлению
 	}
 	if (num_motor == 1) {
-		stepp_2.curent_steps = map (stepper, 0,RESOLUTION, (stepp_2.step_down<<4)-PROTECT, (stepp_2.step_up<<4)-PROTECT); // тут умножение на 32 заменено смещением на 4
+		//stepp_2.curent_steps = map (stepper, 0,RESOLUTION, (stepp_2.step_down<<4)-PROTECT, (stepp_2.step_up<<4)-PROTECT); // тут умножение на 32 заменено смещением на 4
+		stepp_2.curent_steps = stepper;
 		flags.balance_2 = 1;     // но так как у нас переменная считается в прерывании 2 раза то нужно еще и разделит на 2, но можем просто делить на 16
 		CLEAR_REG(TIM16->CNT);                        // сбросим счетчик в ноль
 	    SET_BIT(TIM16->DIER, TIM_DIER_UIE);           // включим прерывание по обновлению
 	}
 	return 1;
+}
+
+uint32_t max_step (uint32_t num_motor) {              // отдать максимальное количество шагов
+	if (num_motor == 1) {
+		return (stepp_1.step_down << 5)  + (stepp_1.step_up << 5);
+	}
+	if (num_motor == 2) {
+		return (stepp_2.step_down << 5) + (stepp_2.step_up << 5);
+	}
+	return 0;
 }
 
 void init_struct (void){                         // инициализируем ячейки

@@ -5,7 +5,7 @@ volatile uint32_t Delay_counter_ms = 0; //Счетчик для функции D
 volatile uint32_t counter_ms = 0; //Счетчик для функции pid
 volatile uint32_t counter_ms1 = 0; //Счетчик для функции pid
 extern struct _flags *point_flags;
-// yjy
+
 void init_rcc(void) {
 	SET_BIT(RCC->CR, RCC_CR_HSEON); //Запустим внешний кварцевый резонатор. Он у нас на 8 MHz.
 	while (READ_BIT(RCC->CR, RCC_CR_HSERDY) == 0); //Дождемся поднятия флага о готовности

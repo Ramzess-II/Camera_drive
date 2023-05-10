@@ -94,6 +94,7 @@ uint32_t set_pid (uint32_t new_pid) ;
 void search_steps (void);
 uint32_t extrn_step(uint32_t stepper, uint32_t num_motor);
 uint32_t setting_pin_rasbery (uint32_t sign);
+uint32_t max_step (uint32_t num_motor);
 
 
 //----------------------- объявим глобальные переменные --------------------------//
