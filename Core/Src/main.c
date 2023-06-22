@@ -57,7 +57,7 @@ int main(void) {
     init_wdt ();                             // инициализация вач дога
     init_Uart2 (57600);                      // юарт Малинка
 
-   //const	 uint16_t  FLASH_SIZE = (*((uint16_t*)FLASHSIZE_BASE)) << 10;   // размер памяти узнать
+   //const uint16_t  FLASH_SIZE = (*((uint16_t*)FLASHSIZE_BASE)) << 10;   // размер памяти узнать
 
 	for(;;){
 		iwdt_reset();                          // сбросить ватч дог

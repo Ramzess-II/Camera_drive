@@ -10,7 +10,7 @@ extern "C" {
 #include "stm32f0xx.h"
 //----------------------- дефайним значения ----------------------------------//
 
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 #define SYS_CLOCK 48000000
 #define UP 1

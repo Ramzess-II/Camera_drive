@@ -54,6 +54,9 @@ Step_dir.list \
 OBJCOPY_HEX += \
 Step_dir.hex \
 
+OBJCOPY_BIN += \
+Step_dir.bin \
+
 
 # All Target
 all: main-build
@@ -82,12 +85,17 @@ Step_dir.hex: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
+Step_dir.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objcopy  -O binary $(EXECUTABLES) "Step_dir.bin"
+	@echo 'Finished building: $@'
+	@echo ' '
+
 # Other Targets
 clean:
-	-$(RM) Step_dir.elf Step_dir.hex Step_dir.list Step_dir.map default.size.stdout
+	-$(RM) Step_dir.bin Step_dir.elf Step_dir.hex Step_dir.list Step_dir.map default.size.stdout
 	-@echo ' '
 
-secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX)
+secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_HEX) $(OBJCOPY_BIN)
 
 fail-specified-linker-script-missing:
 	@echo 'Error: Cannot find the specified linker script. Check the linker settings in the build configuration.'

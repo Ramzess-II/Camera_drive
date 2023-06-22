@@ -22,6 +22,7 @@ void init_rcc(void) {
 
 	SET_BIT(RCC->AHBENR, RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOBEN); //Включим тактирование порта А, Включим тактирование порта В
 	//SET_BIT(RCC->AHBENR, RCC_AHBENR_GPIOBEN); //Включим тактирование порта В
+	__enable_irq();                                                        // важно!
 }
 
 void init_wdt(void) {
