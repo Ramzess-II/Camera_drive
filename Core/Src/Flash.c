@@ -1,7 +1,7 @@
 
 #include "main.h"
 
-long map(long x, long in_min, long in_max, long out_min, long out_max) {
+int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
@@ -20,19 +20,12 @@ void new_baud_set (uint32_t baud){
 uint32_t new_speed (uint32_t speed, uint32_t num_motor){     // новая скорость вращения.
 	if (speed > 1000) return 0;                              // поиграться с этими параметрами
 	if (num_motor == 0) {
-		TIM17->ARR = map (speed, 0, 1000, 10000, 100);
+		TIM17->ARR = map (speed, 0, 1000, 30000, 100);
 	}
 	if (num_motor == 1) {
-		TIM16->ARR = map (speed, 0, 1000, 10000, 100);
+		TIM16->ARR = map (speed, 0, 1000, 30000, 100);
 	}
 	return speed;
-}
-
-void new_step_no_memory (void) {            // записать новые шаги, без изменения памяти
-	write_to_TMC2300 (1,0x6C, 0x8008001);   //  выберем шаг 1
-	Delay_ms(2);
-	write_to_TMC2300 (3,0x6C, 0x8008001);   //  выберем шаг 1
-	Delay_ms(2);
 }
 
 void init_flash_data (void) {                                // инициализация параметров из памяти
@@ -44,7 +37,12 @@ void init_flash_data (void) {                                // инициали
 
 }
 
-
+/*void new_step_no_memory (void) {            // записать новые шаги, без изменения памяти
+	write_to_TMC2300 (1,0x6C, 0x8008001);   //  выберем шаг 1
+	Delay_ms(2);
+	write_to_TMC2300 (3,0x6C, 0x8008001);   //  выберем шаг 1
+	Delay_ms(2);
+}*/
 
 /*uint32_t verif_and_write (uint8_t adr, uint32_t data, uint8_t num_motor) {    // проверка правильные ли данные + запись по юарту в драйвер
 	if (data == 1 || data == 2 || data == 4 || data == 8 || data == 16 || data == 32 || data == 64 || data == 128 || data == 256){

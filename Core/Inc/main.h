@@ -83,13 +83,13 @@ void filtr_adc (void) ;
 void init_flash_data (void);
 void init_debug_pin (void);
 void init_struct (void);
-void new_step_no_memory (void);
+//void new_step_no_memory (void);
 void zero_in_program (void);
 void init_wdt (void);
 void init_tim3 (void);
 float constrain(float x, float a, float b);
 uint32_t computePID(float input, float setpoint, float kp, float ki, float kd, float dt, int minOut, int maxOut);
-long map(long x, long in_min, long in_max, long out_min, long out_max);
+int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max);
 uint32_t set_pid (uint32_t new_pid) ;
 void search_steps (void);
 uint32_t extrn_step(uint32_t stepper, uint32_t num_motor);
@@ -124,7 +124,7 @@ struct stepp {
 	//struct bits setting;   // добавим структуру
 	int32_t last_steps;
 	int32_t curent_steps;
-	uint32_t step_up;
+	int32_t step_up;
 	int32_t step_down;
 };
 

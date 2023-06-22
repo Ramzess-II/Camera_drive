@@ -1,6 +1,5 @@
-../Core/Src/Flash.c:4:6:map	24	static
+../Core/Src/Flash.c:4:9:map	24	static
 ../Core/Src/Flash.c:8:10:new_baud	16	static
 ../Core/Src/Flash.c:14:6:new_baud_set	16	static
 ../Core/Src/Flash.c:20:10:new_speed	24	static
-../Core/Src/Flash.c:31:6:new_step_no_memory	8	static
-../Core/Src/Flash.c:38:6:init_flash_data	8	static
+../Core/Src/Flash.c:31:6:init_flash_data	8	static

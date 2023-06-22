@@ -26,18 +26,18 @@ void ADC_init (void){
 	SET_BIT(GPIOA->MODER, GPIO_MODER_MODER4);      // установить аналог мод
 	//SET_BIT(GPIOA->MODER, GPIO_MODER_MODER5);    // установить аналог мод
 	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_ADCEN);      // включим тактирование
-	SET_BIT(ADC1->SMPR, 0b011 << ADC_SMPR_SMP_Pos);// Количество циклов преобразования
-	SET_BIT(ADC1->CHSELR, ADC_CHSELR_CHSEL4);      // выбор канала 4
-	SET_BIT(ADC1->CHSELR, ADC_CHSELR_CHSEL5);      // выбор канала 5
-//	SET_BIT(ADC1->CHSELR, ADC_CHSELR_CHSEL16);     // выбор канала temperature
-//	SET_BIT(ADC->CCR, ADC_CCR_TSEN);               // температурный датчик включить
+	SET_BIT(ADC1->SMPR, 0b011 << ADC_SMPR_SMP_Pos);                    // Количество циклов преобразования
+	SET_BIT(ADC1->CHSELR, ADC_CHSELR_CHSEL4 | ADC_CHSELR_CHSEL5);      // выбор канала 4, выбор канала 5
+    //SET_BIT(ADC1->CHSELR, ADC_CHSELR_CHSEL5);    // выбор канала 5
+//SET_BIT(ADC1->CHSELR, ADC_CHSELR_CHSEL16);       // выбор канала temperature
+//SET_BIT(ADC->CCR, ADC_CCR_TSEN);                 // температурный датчик включить
 	SET_BIT(ADC1->CR, ADC_CR_ADCAL);               // Запустим калибровку
 	while (READ_BIT(ADC1->CR, ADC_CR_ADCAL));      // Дождемся поднятия флага о готовности
 	//SET_BIT(ADC1->IER, ADC_IER_EOCIE);           // включить прерывание
 	SET_BIT(ADC1->CFGR1, ADC_CFGR1_CONT);          // постоянный режим преобразования
 	//SET_BIT(ADC1->CFGR1, ADC_CFGR1_ALIGN);       // левое правое выравнивание
-	SET_BIT(ADC1->CFGR1, ADC_CFGR1_DMAEN);         // ДМА ключить
-	SET_BIT(ADC1->CFGR1, ADC_CFGR1_DMACFG);        // ДМА в круговом режиме
+	SET_BIT(ADC1->CFGR1, ADC_CFGR1_DMAEN | ADC_CFGR1_DMACFG);         // ДМА ключить, ДМА в круговом режиме
+//SET_BIT(ADC1->CFGR1, ADC_CFGR1_DMACFG);          // ДМА в круговом режиме
 	SET_BIT(ADC1->CR, ADC_CR_ADEN);                // Включим АЦП
 	SET_BIT(ADC1->CR, ADC_CR_ADSTART);             // Запустим преобразование
 	//NVIC_EnableIRQ(ADC1_IRQn);
@@ -48,12 +48,12 @@ void ADC_init (void){
 	DMA1_Channel1->CPAR = (uint32_t)&(ADC1->DR);            // адрес для переферии для считывания
 	DMA1_Channel1->CMAR = (uint32_t)adc_buf;                // адрес памяти
 	DMA1_Channel1->CNDTR = 2;                               // размер буффера приема
-	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_PL_1);              // максимальный приоритет
-	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_CIRC);              // циклический режим
-	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_MSIZE_0);           // Размер памяти 16 бит
-	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_PSIZE_0);           // Размер переферии 16 бит
-	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_MINC);              // инкрементировать память
-	//SET_BIT(DMA1_Channel1->CCR, DMA_CCR_TCIE);              // прерывание после передачи, а надо?
+	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_PL_1 | DMA_CCR_CIRC | DMA_CCR_MSIZE_0 | DMA_CCR_PSIZE_0 | DMA_CCR_MINC);   // максимальный приоритет
+//SET_BIT(DMA1_Channel1->CCR, DMA_CCR_CIRC);              // циклический режим
+//SET_BIT(DMA1_Channel1->CCR, DMA_CCR_MSIZE_0);           // Размер памяти 16 бит
+//SET_BIT(DMA1_Channel1->CCR, DMA_CCR_PSIZE_0);           // Размер переферии 16 бит
+//SET_BIT(DMA1_Channel1->CCR, DMA_CCR_MINC);              // инкрементировать память
+	//SET_BIT(DMA1_Channel1->CCR, DMA_CCR_TCIE);          // прерывание после передачи, а надо?
 	//NVIC_EnableIRQ(DMA1_Channel1_IRQn);
 	SET_BIT(DMA1_Channel1->CCR, DMA_CCR_EN);                // включить дма
 }

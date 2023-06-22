@@ -9,16 +9,15 @@ extern struct stepp stepp_2;
 static inline void check_iris (uint8_t poz);
 static inline void check_mov (void);
 //----------------------- объявим внутренние переменные ------------------------//
-float kp = 0.25;
-float ki = 2.2;
-float kd = 0.00005;
+float kp = 0.15;     // 0.25
+float ki = 1.8;      // 2.2
+float kd = 0.000005; // 0.00005
 int ks = 0;
 
-int open = 1000;
+int open = 2000;
 int min = 100;
-int max = 420;
+int max = 600; //420
 uint8_t pid_param = 40;
-
 
 volatile uint32_t count = 0;
 uint8_t flg = 0;
@@ -132,7 +131,7 @@ uint32_t computePID(float input, float setpoint, float kp, float ki, float kd, f
   if (ks > 0) ks -= 15;                                           // для замедления реакции
   if (ks < 0) ks += 15;
   static float integral = 0, prevErr = 0;
-  integral = constrain(integral + err * dt * ki, minOut, maxOut);
+  integral = constrain(integral + err * dt * ki, minOut, maxOut);  // ???? ki
   float D = (err - prevErr) / dt;
   prevErr = err;
   return constrain(err * kp + integral + D * kd, minOut, maxOut);
@@ -142,7 +141,7 @@ uint32_t set_pid (uint32_t new_pid) {
 	if (new_pid < 0 || new_pid > 100) return 0;
 	pid_param = new_pid;
 	uint16_t mirror = 0;
-	mirror = map (new_pid, 0, 100, 600, 3000);
+	/*mirror = map (new_pid, 0, 100, 1000, 4000);   // вот тут зависит от АЦП 600 - 3000 олд
 	if (mirror > open){
 		if (mirror > open ){ ks = mirror - open; } //ks = ks /2;
 		open = mirror;
@@ -151,7 +150,10 @@ uint32_t set_pid (uint32_t new_pid) {
 	if (mirror < open) {
 		if (mirror < open ){ ks = mirror - open; } // ks = ks /2;
 		open = mirror;
-	}
+	}*/
+	mirror = map (new_pid, 0, 100, 450, 4000);   // вот тут зависит от АЦП 600 - 3000 олд
+	ks = mirror - open;
+	open = mirror;
 	return new_pid;
 }
 

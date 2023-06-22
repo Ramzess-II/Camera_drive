@@ -33,11 +33,9 @@ void stop_motor (void){
 
 uint32_t poz_motor (uint8_t num_motor){
 	if (num_motor == 1) {
-	//	return map (stepp_1.last_steps, (stepp_1.step_down<<4)-PROTECT, (stepp_1.step_up<<4)-PROTECT, RESOLUTION, 0);
 		return stepp_1.last_steps ;  // для совместимости с входящими данными
 	}
 	if (num_motor == 2) {
-	//	return map (stepp_2.last_steps, (stepp_2.step_down<<4)-PROTECT, (stepp_2.step_up<<4)-PROTECT, 0,RESOLUTION);
 		return stepp_2.last_steps ;
 	}
 	return 0;
@@ -46,15 +44,15 @@ uint32_t poz_motor (uint8_t num_motor){
 static inline void search_zero(void) {              // поиск нуля
 	if (!flags.start_zero) {                        // если мы первый раз заходим в прерывание
 		flags.start_zero = TRUE;                    // сбросим флаг первого раза
-		DIR1_ON;                                    // установим дир в нужное положение, чтоб шагать к концевику
+		DIR1_OFF;                                    // установим дир в нужное положение, чтоб шагать к концевику
 		DIR2_ON;                                    // сюда заходим один раз чтоб сначала установить дир, а потом шагать
 	} else {                                        // если уже не первый раз заходим
-		if (READ_LIM1 && !flags.zero_pos1) {        // считаем состояние концевика, если не ноль, шагаем
+		if (!READ_LIM1 && !flags.zero_pos1) {        // считаем состояние концевика, если не ноль, шагаем
 			if (GPIOA->IDR & GPIO_IDR_0)            // считаем что у нас сейчас в регистре выхода,
 				STEP1_OFF;                          // если 1 то выставим 0
 			else {
 				STEP1_ON;                           // если же там 0 то установим 1 на выходе
-				stepp_1.step_down ++;                   // считаем переменную количества шагов от конца --;
+				stepp_1.step_down --;               // считаем переменную количества шагов от конца --;
 			}
 		} else {
 			flags.zero_pos1 = TRUE;                 // если вдруг сработал концевик то ставим флаг
@@ -65,7 +63,7 @@ static inline void search_zero(void) {              // поиск нуля
 				STEP2_OFF;                          // считаем что у нас сейчас в регистре выхода, если 1 то выставим 0
 			else {
 				STEP2_ON;                           // если же там 0 то установим 1 на выходе
-				stepp_2.step_down ++;
+				stepp_2.step_down --;
 			}
 		} else {
 			flags.zero_pos2 = TRUE;                 // если вдруг сработал концевик то ставим флаг
@@ -73,25 +71,25 @@ static inline void search_zero(void) {              // поиск нуля
 		}
 	}
 
-	if (flags.zero_pos1 && flags.zero_pos2) {       // если сработало два флага значит мы в нулях
-		flags.zero_ok = TRUE;                       // установим флаг
-		stepp_1.last_steps = stepp_1.step_down << 5;     // приравняем в текущие шаги то сколько отшагали от конца
-		stepp_2.last_steps = stepp_2.step_down << 5;
+	if (flags.zero_pos1 && flags.zero_pos2) {            // если сработало два флага значит мы в нулях
+		flags.zero_ok = TRUE;                            // установим флаг
+		stepp_1.last_steps = 0;//stepp_1.step_down << 5;     // приравняем в текущие шаги то сколько отшагали от конца
+		stepp_2.last_steps = 0;//stepp_2.step_down << 5;
 		stepp_1.curent_steps = stepp_1.last_steps;
 		stepp_2.curent_steps = stepp_2.last_steps;
 		//flags.zero_in_programm = FALSE;             // сбросить флаг обнуления в программе
 		//flags.reset_setting = TRUE;                 // установить флаг что нужно перенастроить шаги, скорость
-		CLEAR_BIT(TIM17->DIER, TIM_DIER_UIE);       // выключим прерывание по обновлению
+		CLEAR_BIT(TIM17->DIER, TIM_DIER_UIE);         // выключим прерывание по обновлению
 	}
 }
 
 static inline void revers_zero (void){
 	if (!flags.start_zero) {                        // если мы первый раз заходим в прерывание
 		flags.start_zero = TRUE;                    // сбросим флаг первого раза
-		DIR1_OFF;                                   // установим дир в нужное положение, чтоб шагать к концевику
-		DIR2_OFF;                                   // сюда заходим один раз чтоб сначала установить дир, а потом шагать
+		DIR1_ON;                                   // установим дир в нужное положение, чтоб шагать к концевику
+		DIR2_OFF;                                    // сюда заходим один раз чтоб сначала установить дир, а потом шагать
 	} else {                                        // если уже не первый раз заходим
-		if (!READ_LIM1 && !flags.zero_pos1) {       // считаем состояние концевика, если не ноль, шагаем
+		if (READ_LIM1 && !flags.zero_pos1) {       // считаем состояние концевика, если ноль, шагаем
 			if (GPIOA->IDR & GPIO_IDR_0)            // считаем что у нас сейчас в регистре выхода,
 				STEP1_OFF;                          // если 1 то выставим 0
 			else {
@@ -124,9 +122,9 @@ static inline void revers_zero (void){
 static inline void new_step_go1(void) {
 	if (flags.balance_1) {                                   // если новое движение
 		if (stepp_1.curent_steps > stepp_1.last_steps)       // если у нас движение в одну сторону
-			DIR1_ON;                                         // установим единичку на дир
+			DIR1_OFF;                                        // установим единичку на дир
 		else                                                 // если в другую
-			DIR1_OFF;                                        // установим нолик на дир
+			DIR1_ON;                                         // установим нолик на дир
 		flags.balance_1 = FALSE;                             // сбросим новое движение
 	} else {                                                 // если мы уже двигаемся в заданном направлении
 		if (stepp_1.curent_steps == stepp_1.last_steps) {    // если шаги равны то пропускаем движение
@@ -146,13 +144,13 @@ static inline void new_step_go1(void) {
 		}
 	}
 }
-
+//DIR инвертирован
 static inline void new_step_go2(void) {
 	if (flags.balance_2) {
 		if (stepp_2.curent_steps > stepp_2.last_steps)
-			DIR2_ON;                                         // установим единичку на дир
+			DIR2_ON;                                        // установим единичку на дир
 		else
-			DIR2_OFF;                                        // установим нолик на дир
+			DIR2_OFF;                                         // установим нолик на дир
 		flags.balance_2 = FALSE;
 	}else {                                                  // если мы уже двигаемся в заданном направлении
 		if (stepp_2.curent_steps == stepp_2.last_steps) {    // если шаги равны то пропускаем движение
@@ -227,11 +225,16 @@ uint32_t extrn_step(uint32_t stepper, uint32_t num_motor){
 }
 
 uint32_t max_step (uint32_t num_motor) {              // отдать максимальное количество шагов
-	if (num_motor == 1) {
-		return (stepp_1.step_down << 5)  + (stepp_1.step_up << 5);
+	uint32_t return_data = 0;
+	if (num_motor == 0) {
+		return_data = (-stepp_1.step_down << 5) << 16;
+		return_data |= (stepp_1.step_up << 5);        // *32 чтоб мы могли двигаться по дробленому шагу
+		return return_data; //return (stepp_1.step_down << 5)  + (stepp_1.step_up << 5);
 	}
-	if (num_motor == 2) {
-		return (stepp_2.step_down << 5) + (stepp_2.step_up << 5);
+	if (num_motor == 1) {
+		return_data = (stepp_2.step_up << 5) << 16;
+		return_data |= (-stepp_2.step_down << 5);        // *32 чтоб мы могли двигаться по дробленому шагу
+		return return_data; //return (stepp_2.step_down << 5) + (stepp_2.step_up << 5);
 	}
 	return 0;
 }
@@ -306,5 +309,8 @@ void search_steps (void) {                        // поиск количест
 }*/
 
 
-
+// в этой прошивке я перевернул направление поиска нуля, добавил отрицательные числа для шагов в другую сторону относительно концевика
+// и возвращаю я два значения теперь в одной 32 битной переменной.
+// зум это двигатель 0, фокус двигатель 1
+// и фокус инвертирован относительно зума
 

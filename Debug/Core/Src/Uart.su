@@ -1,14 +1,14 @@
 ../Drivers/CMSIS/Include/core_cm0.h:623:22:__NVIC_EnableIRQ	16	static
 ../Drivers/CMSIS/Include/core_cm0.h:730:22:__NVIC_SetPriority	24	static
 ../Core/Src/Uart.c:51:6:init_Uart1	16	static
-../Core/Src/Uart.c:78:6:init_Uart2	16	static
-../Core/Src/Uart.c:105:6:set_baud	24	static
-../Core/Src/Uart.c:115:6:UART1_transmit	16	static
+../Core/Src/Uart.c:79:6:init_Uart2	16	static
+../Core/Src/Uart.c:106:6:set_baud	24	static
+../Core/Src/Uart.c:116:6:UART1_transmit	16	static
 ../Core/Src/Uart.c:124:6:UART2_transmit	16	static
 ../Core/Src/Uart.c:133:6:write_to_TMC2300	16	static
 ../Core/Src/Uart.c:146:6:read_TMC2300	16	static
 ../Core/Src/Uart.c:154:6:setting_TMC230	8	static
-../Core/Src/Uart.c:165:6:parsing_data	24	static
+../Core/Src/Uart.c:165:6:parsing_data	16	static
 ../Core/Src/Uart.c:240:10:read_flag	16	static
 ../Core/Src/Uart.c:253:6:form_send_byte	16	static
 ../Core/Src/Uart.c:281:10:make_32bit	24	static
@@ -16,4 +16,4 @@
 ../Core/Src/Uart.c:300:6:swuart_calcCRC	32	static
 ../Core/Src/Uart.c:319:9:calcCRC	24	static
 ../Core/Src/Uart.c:334:6:USART1_IRQHandler	8	static
-../Core/Src/Uart.c:362:6:USART2_IRQHandler	8	static
+../Core/Src/Uart.c:363:6:USART2_IRQHandler	8	static

@@ -56,49 +56,50 @@ void init_Uart1(uint32_t baud) {
 	SET_BIT(GPIOA->OTYPER, GPIO_OTYPER_OT_9); // открытый колектор
 	SET_BIT(GPIOA->AFR[1], 1<<GPIO_AFRH_AFSEL9_Pos); // альтернативную функцию включим см даташит
 
-	//SET_BIT(USART1->CR1, USART_CR1_M1);  размер байта 7,8,9
-	//SET_BIT(USART1->CR1, USART_CR1_M0);  размер байта 7,8,9
-	SET_BIT(USART1->CR1, USART_CR1_OVER8);// делитель на 8
-	//SET_BIT(USART1->CR1, USART_CR1_PCE);  // включить контроль паритета
-	//SET_BIT(USART1->CR1, USART_CR1_PS);   // Even or Odd паритет
-	//SET_BIT(USART1->CR1, USART_CR1_TXEIE);  // TXE прерывание при передаче нужно включать только после отправки первого байта
-	SET_BIT(USART1->CR1, USART_CR1_TE);       // передатчик включить
-	SET_BIT(USART1->CR1, USART_CR1_RE);       // приемник включить
-	SET_BIT(USART1->CR3, USART_CR3_HDSEL);    // однопроводной режим
+	SET_BIT(USART1->CR1, USART_CR1_OVER8 | USART_CR1_TE | USART_CR1_RE | USART_CR3_HDSEL);// делитель на 8
+
+	//SET_BIT(USART1->CR1, USART_CR1_M1);       // размер байта 7,8,9
+	//SET_BIT(USART1->CR1, USART_CR1_M0);       // размер байта 7,8,9
+	//SET_BIT(USART1->CR1, USART_CR1_PCE);      // включить контроль паритета
+	//SET_BIT(USART1->CR1, USART_CR1_PS);       // Even or Odd паритет
+	//SET_BIT(USART1->CR1, USART_CR1_TXEIE);    // TXE прерывание при передаче нужно включать только после отправки первого байта
+	//SET_BIT(USART1->CR1, USART_CR1_TE);       // передатчик включить
+	//SET_BIT(USART1->CR1, USART_CR1_RE);       // приемник включить
+	//SET_BIT(USART1->CR3, USART_CR3_HDSEL);    // однопроводной режим
 
 	set_baud(USART1, baud);
 
-	SET_BIT(USART1->CR1, USART_CR1_RXNEIE);   // прерывание на прием
+	SET_BIT(USART1->CR1, USART_CR1_RXNEIE);     // прерывание на прием
 	//SET_BIT(USART1->CR1, USART_CR1_IDLEIE);   // прерывание IDLEIE для надежности обнулим руками
-	SET_BIT(USART1->CR1, USART_CR1_UE); // включим USART
-	NVIC_EnableIRQ(USART1_IRQn);        //Включим прерывания по USART
-	NVIC_SetPriority(USART1_IRQn, 1);   // выставим приоритет
+	SET_BIT(USART1->CR1, USART_CR1_UE);         // включим USART
+	NVIC_EnableIRQ(USART1_IRQn);                // Включим прерывания по USART
+	NVIC_SetPriority(USART1_IRQn, 1);           // выставим приоритет
 }
 
 void init_Uart2(uint32_t baud) {
-	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_USART2EN);   // включим тактирование юарта
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_USART2EN);                                 // включим тактирование юарта
 
-	SET_BIT(GPIOA->MODER, GPIO_MODER_MODER2_1); // альтернативную функцию включим для ножки А2
-	SET_BIT(GPIOA->OSPEEDR, GPIO_OSPEEDER_OSPEEDR2);    // максимальную скорость
-	SET_BIT(GPIOA->OTYPER, GPIO_OTYPER_OT_2);           // открытый колектор
-	SET_BIT(GPIOA->PUPDR, GPIO_PUPDR_PUPDR2_0);         // резистор к +
-	SET_BIT(GPIOA->AFR[0], 1<<GPIO_AFRL_AFSEL2_Pos);    // альтернативную функцию включим см даташит
+	SET_BIT(GPIOA->MODER, GPIO_MODER_MODER2_1 | GPIO_MODER_MODER3_1);            // альтернативную функцию включим для ножки А2
+	SET_BIT(GPIOA->OSPEEDR, GPIO_OSPEEDER_OSPEEDR2 | GPIO_OSPEEDER_OSPEEDR3);    // максимальную скорость
+	SET_BIT(GPIOA->OTYPER, GPIO_OTYPER_OT_2);                                    // открытый колектор
+	SET_BIT(GPIOA->PUPDR, GPIO_PUPDR_PUPDR2_0 | GPIO_PUPDR_PUPDR3_0);            // резистор к +
+	SET_BIT(GPIOA->AFR[0], 1<<GPIO_AFRL_AFSEL2_Pos | 1<<GPIO_AFRL_AFSEL3_Pos);   // альтернативную функцию включим см даташит 37стрн
 
-	SET_BIT(GPIOA->MODER, GPIO_MODER_MODER3_1); // альтернативную функцию включим
-	SET_BIT(GPIOA->OSPEEDR, GPIO_OSPEEDER_OSPEEDR3);  // максимальную скорость
-	SET_BIT(GPIOA->PUPDR, GPIO_PUPDR_PUPDR3_0);       // резистор к +
-	SET_BIT(GPIOA->AFR[0], 1<<GPIO_AFRL_AFSEL3_Pos); // альтернативную функцию включим см даташит
+	//SET_BIT(GPIOA->MODER, GPIO_MODER_MODER3_1);          // альтернативную функцию включим
+	//SET_BIT(GPIOA->OSPEEDR, GPIO_OSPEEDER_OSPEEDR3);     // максимальную скорость
+	//SET_BIT(GPIOA->PUPDR, GPIO_PUPDR_PUPDR3_0);          // резистор к +
+	//SET_BIT(GPIOA->AFR[0], 1<<GPIO_AFRL_AFSEL3_Pos);     // альтернативную функцию включим см даташит
 
-	SET_BIT(USART2->CR1, USART_CR1_OVER8);    // делитель на 8
-	SET_BIT(USART2->CR1, USART_CR1_TE);       // передатчик включить
-	SET_BIT(USART2->CR1, USART_CR1_RE);       // приемник включить
-	SET_BIT(USART2->CR1, USART_CR1_RXNEIE);   // прерывание на прием
-	SET_BIT(USART2->CR1, USART_CR1_IDLEIE);   // прерывание IDLEIE
+	SET_BIT(USART2->CR1, USART_CR1_OVER8 | USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_IDLEIE);    // делитель на 8
+	//SET_BIT(USART2->CR1, USART_CR1_TE);       // передатчик включить
+	//SET_BIT(USART2->CR1, USART_CR1_RE);       // приемник включить
+	//SET_BIT(USART2->CR1, USART_CR1_RXNEIE);   // прерывание на прием
+	//SET_BIT(USART2->CR1, USART_CR1_IDLEIE);   // прерывание IDLEIE
 
 	set_baud(USART2, baud);
 
 	SET_BIT(USART2->CR1, USART_CR1_UE);   // включим USART
-	NVIC_EnableIRQ(USART2_IRQn);          //Включим прерывания по USART
+	NVIC_EnableIRQ(USART2_IRQn);          // Включим прерывания по USART
 	NVIC_SetPriority(USART2_IRQn, 1);     // выставим приоритет
 }
 
@@ -113,9 +114,8 @@ void set_baud(USART_TypeDef *usart, uint32_t baud) {   //добавить защ
 }
 
 void UART1_transmit(uint8_t lenght, uint8_t *data) {
-	while (husart1.tx_counter)
-		;   //Ждем, пока линия не освободится
-	USART1->TDR = *data;          //Кидаем данные
+	while (husart1.tx_counter);     // Ждем, пока линия не освободится
+	USART1->TDR = *data;            // Кидаем данные
 	husart1.tx_size = lenght;
 	husart1.tx_counter = 1;         // увеличиваем счетчик
 	USART1->CR1 |= USART_CR1_TXEIE; // включим прерывание
@@ -131,10 +131,10 @@ void UART2_transmit(uint8_t lenght, uint8_t *data) {
 }
 
 void write_to_TMC2300(uint8_t adr, uint8_t reg, uint32_t data) {
-	husart1.tx_buffer[0] = 0x55; // это синхронизация
-	husart1.tx_buffer[1] = adr; // адрес модуля
-	husart1.tx_buffer[2] = 0x80; // устновим бит записи
-	husart1.tx_buffer[2] |= reg; // регистр в который пишем + бит записи
+	husart1.tx_buffer[0] = 0x55;        // это синхронизация
+	husart1.tx_buffer[1] = adr;         // адрес модуля
+	husart1.tx_buffer[2] = 0x80;        // устновим бит записи
+	husart1.tx_buffer[2] |= reg;        // регистр в который пишем + бит записи
 	husart1.tx_buffer[3] = data >> 24;
 	husart1.tx_buffer[4] = data >> 16;
 	husart1.tx_buffer[5] = data >> 8;
@@ -163,7 +163,7 @@ void setting_TMC230(void) {
 }
 
 void parsing_data(void) {  // парсим данные
-	uint32_t bdt = 0;      // для запоминания скорости перед установкой
+	//uint32_t bdt = 0;      // для запоминания скорости перед установкой
 	if (husart2.rx_ok) {   // если флаг ок, сбросим его
 		husart2.rx_ok = 0;
 		if (husart2.rx_buffer[0] == 0x02) { // если совпадает начало посылки  умножение на 4 заменим смещением на 2
@@ -186,11 +186,11 @@ void parsing_data(void) {  // парсим данные
 					form_send_byte(MOTOR_POS, 3);
 					break;
 				case 4:
-					send_data.one = new_baud(make_32bit(husart2.rx_buffer + 3)); // установить новую скорость, перенастроить
-					bdt = send_data.one;
-					form_send_byte(SET_BAUD, 1);  // ответить скоростью
-					Delay_ms(5);
-					if (bdt) new_baud_set (bdt);  // если бауд правильный то установить его
+					//send_data.one = new_baud(make_32bit(husart2.rx_buffer + 3)); // установить новую скорость, перенастроить
+					//bdt = send_data.one;
+					//form_send_byte(SET_BAUD, 1);  // ответить скоростью
+					//Delay_ms(5);
+					//if (bdt) new_baud_set (bdt);  // если бауд правильный то установить его
 					break;
 				case 5:
 					send_data.one = extrn_step(make_32bit(husart2.rx_buffer + 3),
@@ -206,8 +206,8 @@ void parsing_data(void) {  // парсим данные
 					form_send_byte(NEW_SPEED, 1);
 					break;
 				case 8:
-					send_data.one = max_step(1); // записать текущую позицию мотора
-					send_data.two = max_step(2);
+					send_data.one = max_step(0); // записать текущую позицию мотора
+					send_data.two = max_step(1);
 					form_send_byte(STEP_COUNT, 2);
 					break;
 				case 9:
@@ -241,7 +241,7 @@ uint32_t read_flag(void) {           // считем отдельные флаг
 	uint32_t data = 0;
 	data = point_flags->ir_filter;
 	data |= point_flags->iris_drive << 1;
-	data |= point_flags->set_led << 2;        //??
+	//data |= point_flags->set_led << 2;        //??
 	if (READ_MOTOR1)
 		data |= 1 << 3;
 	if (READ_MOTOR2)
@@ -254,7 +254,7 @@ void form_send_byte(uint8_t number_send, uint8_t num_byte) { // функция �
 	husart2.tx_buffer[0] = 0x02;        // начало посылки
 	husart2.tx_buffer[1] = num_byte;    // сколько полезных данных
 	husart2.tx_buffer[2] = number_send; // номер посылки (ее смысл)
-	divide_32bit(send_data.one, 3);    // раскладываем переменную в буфер
+	divide_32bit(send_data.one, 3);     // раскладываем переменную в буфер
 	switch (num_byte) {
 	case 0:
 		husart2.tx_buffer[3] = calcCRC(3, husart2.tx_buffer);
@@ -284,9 +284,9 @@ uint32_t make_32bit(uint8_t *start_num) { // собрать 32битную пе�
 	start_num++;
 	data |= *start_num << 16;
 	start_num++;
-	data |= *start_num << 8;
+	data |= *start_num  << 8;
 	start_num++;
-	data |= *start_num;
+	data |= *start_num ;
 	return data;
 }
 
@@ -352,6 +352,7 @@ void USART1_IRQHandler(void) {
 	if (READ_BIT(USART1->ISR, USART_ISR_ORE)) {       //Если прилетел флаг OVRN
 		SET_BIT(USART1->ICR, USART_ICR_ORECF);              //Сбросим флаг OVRN
 	}
+	// тут не включен IDLE так как я слышу сам себя, и по этому ловлю прерывание от себя же
 	/*if (READ_BIT(USART1->ISR, USART_ISR_IDLE)) {       //Если прилетел флаг IDLE
 		SET_BIT(USART1->ICR, USART_ICR_IDLECF);              //Сбросим флаг IDLE
 		husart1.rx_ok = 1;

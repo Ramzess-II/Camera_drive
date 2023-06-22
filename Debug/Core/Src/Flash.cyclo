@@ -1,6 +1,5 @@
-Flash.c:4:6:map	1
+Flash.c:4:9:map	1
 Flash.c:8:10:new_baud	6
 Flash.c:14:6:new_baud_set	1
 Flash.c:20:10:new_speed	4
-Flash.c:31:6:new_step_no_memory	1
-Flash.c:38:6:init_flash_data	1
+Flash.c:31:6:init_flash_data	1
