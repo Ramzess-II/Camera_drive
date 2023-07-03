@@ -67,7 +67,8 @@ void init_Uart1(uint32_t baud) {
 	//SET_BIT(USART1->CR1, USART_CR1_RE);       // приемник включить
 	//SET_BIT(USART1->CR3, USART_CR3_HDSEL);    // однопроводной режим
 
-	set_baud(USART1, baud);
+	//set_baud(USART1, baud);
+	USART1->BRR = 0x340;
 
 	SET_BIT(USART1->CR1, USART_CR1_RXNEIE);     // прерывание на прием
 	//SET_BIT(USART1->CR1, USART_CR1_IDLEIE);   // прерывание IDLEIE для надежности обнулим руками
@@ -78,6 +79,7 @@ void init_Uart1(uint32_t baud) {
 
 void init_Uart2(uint32_t baud) {
 	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_USART2EN);                                 // включим тактирование юарта
+	CLEAR_BIT(USART2->CR1, USART_CR1_UE);                                        // выключим USART иначе нельзя изменить биты
 
 	SET_BIT(GPIOA->MODER, GPIO_MODER_MODER2_1 | GPIO_MODER_MODER3_1);            // альтернативную функцию включим для ножки А2
 	SET_BIT(GPIOA->OSPEEDR, GPIO_OSPEEDER_OSPEEDR2 | GPIO_OSPEEDER_OSPEEDR3);    // максимальную скорость
@@ -96,7 +98,8 @@ void init_Uart2(uint32_t baud) {
 	//SET_BIT(USART2->CR1, USART_CR1_RXNEIE);   // прерывание на прием
 	//SET_BIT(USART2->CR1, USART_CR1_IDLEIE);   // прерывание IDLEIE
 
-	set_baud(USART2, baud);
+	//set_baud(USART2, baud);
+	USART2->BRR = 0x681;
 
 	SET_BIT(USART2->CR1, USART_CR1_UE);   // включим USART
 	NVIC_EnableIRQ(USART2_IRQn);          // Включим прерывания по USART
@@ -228,6 +231,17 @@ void parsing_data(void) {  // парсим данные
 					form_send_byte(RESTARTS, 1);
 					while (1);
 					break;
+				case 13: ;
+				    uint16_t* adr_flash_write;
+				    FLASH->KEYR = FLASH_KEY1;             // последовательность для разблокировки памяти
+					FLASH->KEYR = FLASH_KEY2;
+					SET_BIT(FLASH->CR, FLASH_CR_PG);      // установим бит записи
+					adr_flash_write = (uint16_t*)0x08003FF8;
+					*adr_flash_write = 0x01;
+				    while (!(FLASH->SR & FLASH_SR_EOP));  // Дождемся поднятия флага о готовности
+					CLEAR_BIT(FLASH->CR, FLASH_CR_PG);    // сбросим бит записи
+					SET_BIT(FLASH->CR, FLASH_CR_LOCK);    // заблокируем память
+					while (1);
 				}
 			} else {                                       // если не совпал срс
 				send_data.one = 0x00;   // отправить не ок

@@ -10,14 +10,14 @@ extern "C" {
 #include "stm32f0xx.h"
 //----------------------- дефайним значения ----------------------------------//
 
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 #define SYS_CLOCK 48000000
 #define UP 1
 #define DOWN 2
 #define TRUE 1
 #define FALSE 0
-#define VERSIONS 1
+#define VERSIONS 2         // версия прошивки, начиная с 2 это уже с бутом
 
 #define RESOLUTION 10000   // разрешение системы (отношение количества шагов к входным данным)
 #define PROTECT 10         // отступ от максимальных точек, чтоб не врезалось
